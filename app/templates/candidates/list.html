@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Candidates - AI Recruitment System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="fa-solid fa-users text-primary me-2"></i> Candidates</h2>
+    <a href="{{ url_for('candidates.upload_resume') }}" class="btn btn-primary"><i class="fa-solid fa-upload me-1"></i> Upload Resumes</a>
+</div>
+
+<div class="card shadow-sm mb-4 animate-slide-up delay-1">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('candidates.list_candidates') }}" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label for="search" class="form-label fw-bold">Search</label>
+                <input type="text" class="form-control" id="search" name="search" placeholder="Name or skill..." value="{{ request.args.get('search', '') }}">
+            </div>
+            <div class="col-md-5">
+                <label for="job_id" class="form-label fw-bold">Filter by Job Match</label>
+                <select class="form-select" id="job_id" name="job_id">
+                    <option value="">All Candidates</option>
+                    {% for job in jobs %}
+                    <option value="{{ job.id }}" {% if request.args.get('job_id')|int == job.id %}selected{% endif %}>{{ job.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-filter me-1"></i> Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Candidate</th>
+                        <th>Top Skills</th>
+                        <th>Experience</th>
+                        <th>AI Suitability</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for candidate in candidates %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    {{ candidate.name[0] if candidate.name else '?' }}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">{{ candidate.name }}</h6>
+                                    <small class="text-muted">{{ candidate.email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% set skills = candidate.skills.split(',') if candidate.skills else [] %}
+                            {% for skill in skills[:3] %}
+                                <span class="badge bg-light bg-opacity-10 text-light border border-secondary rounded-pill fw-normal px-2">{{ skill.strip() }}</span>
+                            {% endfor %}
+                            {% if skills|length > 3 %}
+                                <span class="badge bg-secondary bg-opacity-50 text-light border rounded-pill">+{{ skills|length - 3 }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ candidate.experience[:50] ~ '...' if candidate.experience and candidate.experience|length > 50 else candidate.experience }}</td>
+                        <td>
+                            {% if candidate.ai_analysis %}
+                            <div class="d-flex align-items-center">
+                                <span class="me-2 fw-bold {% if candidate.ai_analysis.suitability_score >= 80 %}text-success{% elif candidate.ai_analysis.suitability_score >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                                    {{ candidate.ai_analysis.suitability_score }}/100
+                                </span>
+                            </div>
+                            <small class="text-muted">{{ candidate.ai_analysis.career_level }}</small>
+                            {% else %}
+                            <span class="text-muted">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('candidates.profile', candidate_id=candidate.id) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-eye"></i> View</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="fa-solid fa-users fa-3x mb-3 text-light"></i>
+                            <p>No candidates found.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

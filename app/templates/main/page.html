@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - HireGenie AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-slide-up mt-5">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-lg border-0 backdrop-blur">
+            <div class="card-body p-5">
+                <h1 class="fw-bold mb-4 gradient-text">{{ title }}</h1>
+                
+                <div class="text-muted mb-4">
+                    <p>Last updated: <script>document.write(new Date().toLocaleDateString())</script></p>
+                </div>
+
+                <div class="fs-5 text-muted lh-lg">
+                    <p>
+                        Welcome to the HireGenie AI <strong>{{ title }}</strong> page. 
+                    </p>
+                    <p>
+                        This is a placeholder page designed for deployment purposes. The official {{ title|lower }} text will be inserted here shortly. By using the HireGenie AI platform, you agree that this document serves as a placeholder for our production policies.
+                    </p>
+                    <p>
+                        For any urgent inquiries regarding our platform, data handling, or terms of use, please contact our administrative team directly.
+                    </p>
+                </div>
+                
+                <div class="mt-5 pt-4 border-top border-secondary">
+                    <a href="{{ url_for('main.landing') }}" class="btn btn-outline-primary px-4">Return Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .backdrop-blur {
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-glass);
+    }
+    .gradient-text {
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>
+{% endblock %}

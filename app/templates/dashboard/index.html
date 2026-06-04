@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Recruitment System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="fa-solid fa-chart-pie text-primary me-2"></i> Dashboard</h2>
+    <a href="{{ url_for('jobs.create_job') }}" class="btn btn-primary"><i class="fa-solid fa-plus me-1"></i> New Job</a>
+</div>
+
+{% if total_candidates == 0 and active_jobs == 0 %}
+<!-- Premium Onboarding / Empty State Guide -->
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-11">
+        <div class="card border-0 animate-slide-up position-relative overflow-hidden" style="border-radius: 24px; min-height: 600px; background-color: #0b0f19;">
+            
+            <!-- Premium Mesh Gradient Background -->
+            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: 
+                radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.25) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(79, 172, 254, 0.25) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(142, 45, 226, 0.25) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(74, 0, 224, 0.25) 0px, transparent 50%); filter: blur(40px);">
+            </div>
+            
+            <!-- Floating Decorative Elements -->
+            <div class="position-absolute top-0 end-0 p-5 opacity-50">
+                <i class="fa-solid fa-sparkles fa-3x text-primary animate-pulse" style="animation-duration: 3s;"></i>
+            </div>
+            <div class="position-absolute bottom-0 start-0 p-5 opacity-50">
+                <i class="fa-solid fa-microchip fa-4x text-info animate-pulse" style="animation-duration: 4s; animation-delay: 1s;"></i>
+            </div>
+
+            <div class="card-body p-5 position-relative z-1 d-flex flex-column justify-content-center">
+                
+                <div class="text-center mb-5 animate-slide-up delay-1">
+                    <div class="d-inline-flex align-items-center justify-content-center px-4 py-2 rounded-pill mb-4" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1);">
+                        <span class="badge bg-primary rounded-pill me-2">NEW</span>
+                        <span class="text-white small fw-bold tracking-wide text-uppercase">Welcome to your AI workspace</span>
+                    </div>
+                    <h1 class="fw-bolder mb-3 text-white" style="font-size: 3.5rem; letter-spacing: -1px; text-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        Let's build your <span style="background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Dream Team.</span>
+                    </h1>
+                    <p class="lead text-light opacity-75 mx-auto" style="max-width: 650px; font-size: 1.25rem;">
+                        HireGenie AI eliminates the manual work of recruiting. Just tell us what you're looking for, drop in your resumes, and watch the magic happen.
+                    </p>
+                </div>
+
+                <div class="row g-4 mt-2">
+                    <div class="col-md-4 animate-slide-up delay-2">
+                        <div class="premium-glass-card h-100 p-4 p-xl-5 text-center position-relative overflow-hidden group">
+                            <!-- Card Hover Gradient -->
+                            <div class="position-absolute w-100 h-100 top-0 start-0 bg-gradient-primary opacity-0 group-hover-opacity-100 transition-all duration-500" style="z-index: 0;"></div>
+                            
+                            <div class="position-relative z-1">
+                                <div class="icon-hexagon mx-auto mb-4 bg-primary bg-opacity-25 text-primary">
+                                    <i class="fa-solid fa-briefcase fa-2x"></i>
+                                </div>
+                                <h4 class="fw-bold text-white mb-3">1. Define the Role</h4>
+                                <p class="text-light opacity-75 small mb-5">
+                                    Create a Job Description. Outline the required skills, experience, and department to set the AI's targeting parameters.
+                                </p>
+                                <a href="{{ url_for('jobs.create_job') }}" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-lg w-100">Create Job</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 animate-slide-up delay-3">
+                        <div class="premium-glass-card h-100 p-4 p-xl-5 text-center position-relative overflow-hidden group">
+                            <!-- Card Hover Gradient -->
+                            <div class="position-absolute w-100 h-100 top-0 start-0 bg-gradient-success opacity-0 group-hover-opacity-100 transition-all duration-500" style="z-index: 0;"></div>
+                            
+                            <div class="position-relative z-1">
+                                <div class="icon-hexagon mx-auto mb-4 bg-success bg-opacity-25 text-success">
+                                    <i class="fa-solid fa-file-arrow-up fa-2x"></i>
+                                </div>
+                                <h4 class="fw-bold text-white mb-3">2. Feed the Engine</h4>
+                                <p class="text-light opacity-75 small mb-5">
+                                    Upload batches of PDF resumes. Our parsing engine will automatically extract and structure all candidate data.
+                                </p>
+                                <a href="{{ url_for('candidates.upload_resume') }}" class="btn btn-success rounded-pill px-5 py-2 fw-bold shadow-lg w-100">Upload Resumes</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 animate-slide-up delay-4">
+                        <div class="premium-glass-card h-100 p-4 p-xl-5 text-center position-relative overflow-hidden group">
+                            <!-- Card Hover Gradient -->
+                            <div class="position-absolute w-100 h-100 top-0 start-0 bg-gradient-info opacity-0 group-hover-opacity-100 transition-all duration-500" style="z-index: 0;"></div>
+                            
+                            <div class="position-relative z-1">
+                                <div class="icon-hexagon mx-auto mb-4 bg-info bg-opacity-25 text-info">
+                                    <i class="fa-solid fa-brain fa-2x"></i>
+                                </div>
+                                <h4 class="fw-bold text-white mb-3">3. AI Matching</h4>
+                                <p class="text-light opacity-75 small mb-5">
+                                    HireGenie instantly scores every candidate against your job requirements, giving you actionable hiring recommendations.
+                                </p>
+                                <button class="btn btn-outline-light rounded-pill px-5 py-2 fw-bold shadow-lg w-100" style="border-width: 2px;" disabled>Automated Process</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .premium-glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .premium-glass-card:hover {
+        transform: translateY(-10px);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .icon-hexagon {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 24px;
+        transform: rotate(45deg);
+        transition: all 0.4s ease;
+    }
+    .icon-hexagon i {
+        transform: rotate(-45deg);
+    }
+    .premium-glass-card:hover .icon-hexagon {
+        transform: rotate(0deg) scale(1.1);
+    }
+    .premium-glass-card:hover .icon-hexagon i {
+        transform: rotate(0deg);
+    }
+    /* Group hover utilities for backgrounds */
+    .group:hover .group-hover-opacity-100 {
+        opacity: 0.05 !important;
+    }
+    .bg-gradient-primary { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); }
+    .bg-gradient-success { background: linear-gradient(135deg, #28a745, #20c997); }
+    .bg-gradient-info { background: linear-gradient(135deg, #17a2b8, #0dcaf0); }
+    
+    .tracking-wide { letter-spacing: 0.1em; }
+    .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: .5; transform: scale(0.95); }
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+</style>
+
+{% else %}
+<!-- Main Dashboard Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3 animate-fade-in delay-1">
+        <div class="card stat-card shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-bold mb-1">Total Candidates</h6>
+                        <h3 class="fw-bold mb-0">{{ total_candidates }}</h3>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary">
+                        <i class="fa-solid fa-users fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 animate-fade-in delay-2">
+        <div class="card stat-card success shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-bold mb-1">Avg Match Score</h6>
+                        <h3 class="fw-bold mb-0">{{ avg_score }}%</h3>
+                    </div>
+                    <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success">
+                        <i class="fa-solid fa-bullseye fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 animate-fade-in delay-3">
+        <div class="card stat-card warning shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-bold mb-1">Pending Review</h6>
+                        <h3 class="fw-bold mb-0">{{ pending_count }}</h3>
+                    </div>
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-circle text-warning">
+                        <i class="fa-solid fa-clock fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 animate-fade-in delay-4">
+        <div class="card stat-card danger shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-bold mb-1">Active Jobs</h6>
+                        <h3 class="fw-bold mb-0">{{ active_jobs }}</h3>
+                    </div>
+                    <div class="bg-danger bg-opacity-10 p-3 rounded-circle text-danger">
+                        <i class="fa-solid fa-briefcase fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4 animate-slide-up delay-2">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold">Recent Candidates</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Candidate</th>
+                                <th>Applied For</th>
+                                <th>Match Score</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for candidate in recent_candidates %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            {{ candidate.name[0] if candidate.name else '?' }}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">{{ candidate.name }}</h6>
+                                            <small class="text-muted">{{ candidate.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ candidate.match_results[0].job.title if candidate.match_results else 'General Application' }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% set score = candidate.ai_analysis.suitability_score if candidate.ai_analysis else 0 %}
+                                        <span class="me-2 fw-bold text-success">{{ score }}%</span>
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: {{ score }}%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-level rounded-pill px-3 py-2">
+                                        {{ candidate.ai_analysis.career_level if candidate.ai_analysis else 'New' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('candidates.profile', candidate_id=candidate.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">No candidates yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold">Match Distribution</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="matchChart" width="100%" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Dummy chart data for now
+    const ctx = document.getElementById('matchChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Strong Match', 'Moderate Match', 'Weak Match'],
+            datasets: [{
+                data: [45, 35, 20],
+                backgroundColor: [
+                    '#00f2fe',  // Strong Match (Cyan)
+                    '#4facfe',  // Moderate Match (Purple-ish blue)
+                    'rgba(255, 255, 255, 0.1)' // Weak Match (Gray)
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            color: '#e2e8f0',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { color: '#e2e8f0' }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+</script>
+{% endblock %}

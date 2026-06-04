@@ -1,0 +1,109 @@
+{
+  "name": "AI Resume Processing Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "upload-resume",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook (Resume Upload)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "extract",
+        "documentProperty": "data"
+      },
+      "id": "2",
+      "name": "Extract PDF Text",
+      "type": "n8n-nodes-base.pdf",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "model": "gemini-1.5-flash",
+        "prompt": "Extract candidate info and analyze resume: {{$json.text}}"
+      },
+      "id": "3",
+      "name": "Google Gemini API",
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO candidates (name, skills) VALUES ({{$json.name}}, {{$json.skills}});"
+      },
+      "id": "4",
+      "name": "MySQL Insert Candidate",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "ats@company.com",
+        "toEmail": "recruiter@company.com",
+        "subject": "New Candidate Evaluated",
+        "html": "A new candidate {{$json.name}} scored {{$json.score}}"
+      },
+      "id": "5",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "Webhook (Resume Upload)": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF Text": {
+      "main": [
+        [
+          {
+            "node": "Google Gemini API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini API": {
+      "main": [
+        [
+          {
+            "node": "MySQL Insert Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MySQL Insert Candidate": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

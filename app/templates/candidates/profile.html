@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}{{ candidate.name }} - Profile{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold"><i class="fa-solid fa-id-badge text-primary me-2"></i> Candidate Profile</h2>
+    <a href="{{ url_for('candidates.list_candidates') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Back to List</a>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Basic Info & Resume -->
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4 border-top border-primary border-4">
+            <div class="card-body text-center pt-4">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+                    {{ candidate.name[0] if candidate.name else '?' }}
+                </div>
+                <h4 class="fw-bold mb-1">{{ candidate.name }}</h4>
+                <p class="text-muted mb-3">{{ candidate.ai_analysis.career_level if candidate.ai_analysis else 'Candidate' }}</p>
+                
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    <a href="mailto:{{ candidate.email }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-envelope"></i></a>
+                    {% if candidate.linkedin %}
+                    <a href="{{ candidate.linkedin }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fa-brands fa-linkedin"></i></a>
+                    {% endif %}
+                    {% if candidate.github %}
+                    <a href="{{ candidate.github }}" target="_blank" class="btn btn-sm btn-outline-dark"><i class="fa-brands fa-github"></i></a>
+                    {% endif %}
+                </div>
+                
+                <ul class="list-group list-group-flush text-start">
+                    <li class="list-group-item px-0">
+                        <i class="fa-solid fa-envelope text-muted me-2 width-20"></i> {{ candidate.email or 'N/A' }}
+                    </li>
+                    <li class="list-group-item px-0">
+                        <i class="fa-solid fa-phone text-muted me-2 width-20"></i> {{ candidate.phone or 'N/A' }}
+                    </li>
+                    <li class="list-group-item px-0">
+                        <i class="fa-solid fa-calendar-alt text-muted me-2 width-20"></i> Applied: {{ candidate.created_at.strftime('%Y-%m-%d') }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold">Original Resume</h5>
+            </div>
+            <div class="card-body text-center p-4">
+                <i class="fa-solid fa-file-pdf fa-4x text-danger mb-3"></i>
+                <p class="mb-3 text-muted">{{ candidate.resume.file_name if candidate.resume else 'No file' }}</p>
+                <a href="{{ url_for('api.generate_report', candidate_id=candidate.id) }}" class="btn btn-primary w-100"><i class="fa-solid fa-download me-1"></i> Download Candidate Report</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: AI Analysis & Details -->
+    <div class="col-md-8">
+        {% if candidate.ai_analysis %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0 fw-bold"><i class="fa-solid fa-wand-magic-sparkles me-2"></i> Gemini AI Analysis</h5>
+                <span class="badge bg-white text-primary fs-6 border-0">Suitability: {{ candidate.ai_analysis.suitability_score }}/100</span>
+            </div>
+            <div class="card-body">
+                <h6 class="fw-bold text-primary mb-2">Executive Summary</h6>
+                <p>{{ candidate.ai_analysis.summary }}</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-thumbs-up me-1"></i> Strengths</h6>
+                        <ul class="text-muted ps-3">
+                            {% for strength in candidate.ai_analysis.strengths.split(',') %}
+                            <li>{{ strength.strip() }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-danger mb-2"><i class="fa-solid fa-triangle-exclamation me-1"></i> Potential Weaknesses</h6>
+                        <ul class="text-muted ps-3">
+                            {% for weakness in candidate.ai_analysis.weaknesses.split(',') %}
+                            <li>{{ weakness.strip() }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6 class="fw-bold text-primary mb-2">Technical Assessment</h6>
+                <p class="text-muted mb-4">{{ candidate.ai_analysis.skill_assessment }}</p>
+                
+                <h6 class="fw-bold text-primary mb-2">Communication Assessment</h6>
+                <p class="text-muted mb-0">{{ candidate.ai_analysis.communication_assessment }}</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold">Job Matches</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for match in candidate.match_results %}
+                    <div class="list-group-item p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold mb-0">{{ match.job.title }}</h6>
+                            <span class="badge {% if match.score >= 80 %}bg-success{% elif match.score >= 60 %}bg-warning{% else %}bg-danger{% endif %} bg-opacity-10 {% if match.score >= 80 %}text-success{% elif match.score >= 60 %}text-warning{% else %}text-danger{% endif %} border">
+                                {{ match.score }}% Match
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-2"><span class="fw-bold text-dark">Recommendation:</span> {{ match.recommendation }}</p>
+                        <div class="row small">
+                            <div class="col-md-6">
+                                <span class="fw-bold text-success">Matches:</span> <span class="text-muted">{{ match.matching_skills }}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="fw-bold text-danger">Missing:</span> <span class="text-muted">{{ match.missing_skills }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center text-muted">
+                        No job match analysis performed yet.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold">Extracted Details</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="fw-bold mb-2">Skills</h6>
+                <div class="mb-4">
+                    {% for skill in (candidate.skills or '').split(',') %}
+                    <span class="badge bg-light text-dark border me-1 mb-1">{{ skill.strip() }}</span>
+                    {% endfor %}
+                </div>
+                
+                <h6 class="fw-bold mb-2">Experience</h6>
+                <p class="text-muted mb-4">{{ candidate.experience | replace('\n', '<br>') | safe }}</p>
+                
+                <h6 class="fw-bold mb-2">Education</h6>
+                <p class="text-muted mb-4">{{ candidate.education | replace('\n', '<br>') | safe }}</p>
+                
+                <h6 class="fw-bold mb-2">Projects & Certifications</h6>
+                <p class="text-muted mb-0"><strong>Projects:</strong> {{ candidate.projects or 'None extracted' }}</p>
+                <p class="text-muted mb-0"><strong>Certifications:</strong> {{ candidate.certifications or 'None extracted' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

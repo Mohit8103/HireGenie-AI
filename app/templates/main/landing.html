@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - HireGenie AI{% endblock %}
+
+{% block content %}
+<!-- Absolute background for the hero section -->
+<div class="landing-bg"></div>
+
+<!-- Hero Section -->
+<div class="row align-items-center landing-content" style="min-height: 85vh;">
+    <div class="col-lg-7 animate-fade-in delay-1">
+        <h1 class="display-3 fw-bold text-white mb-4">
+            Automate Your Hiring with <span class="text-transparent bg-clip-text gradient-text">AI</span>
+        </h1>
+        <p class="lead text-muted mb-5 fs-4 pe-lg-5">
+            Transform your recruitment pipeline. Automatically extract skills, score candidates, and match resumes against job descriptions in seconds using state-of-the-art AI.
+        </p>
+        <div class="d-flex gap-3 animate-slide-up delay-2">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-5 shadow-lg">Get Started</a>
+            <a href="#features" class="btn btn-outline-light btn-lg px-5 backdrop-blur">Learn More</a>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div id="features" class="py-5 my-5">
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold mb-3">Powerful Features</h2>
+        <p class="text-muted fs-5">Everything you need to find the perfect candidate, faster.</p>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card h-100 p-4 text-center border-0 backdrop-blur">
+                <div class="mb-4">
+                    <i class="fa-solid fa-file-pdf fa-3x text-primary"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Smart Resume Parsing</h4>
+                <p class="text-muted">Instantly extract text, skills, and experience levels from PDF resumes without manual data entry.</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 p-4 text-center border-0 backdrop-blur">
+                <div class="mb-4">
+                    <i class="fa-solid fa-bullseye fa-3x text-primary"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Intelligent Matching</h4>
+                <p class="text-muted">Our AI analyzes candidate profiles against your specific Job Descriptions to find the perfect fit.</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="card h-100 p-4 text-center border-0 backdrop-blur">
+                <div class="mb-4">
+                    <i class="fa-solid fa-chart-pie fa-3x text-primary"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Rich Analytics</h4>
+                <p class="text-muted">Gain bird's-eye visibility into your hiring funnel, skill distributions, and applicant demographics.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="py-5 my-5">
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold mb-3">How It Works</h2>
+        <p class="text-muted fs-5">A seamless pipeline from application to offer.</p>
+    </div>
+    
+    <div class="row align-items-center mb-5" data-aos="fade-right">
+        <div class="col-md-6 order-2 order-md-1">
+            <h3 class="fw-bold mb-3">1. Upload Resumes</h3>
+            <p class="text-muted fs-5">Drag and drop your candidate resumes into our system. We support batch processing so you can upload hundreds of PDFs at once.</p>
+        </div>
+        <div class="col-md-6 text-center order-1 order-md-2 mb-4 mb-md-0">
+            <i class="fa-solid fa-cloud-arrow-up fa-5x text-muted opacity-50"></i>
+        </div>
+    </div>
+    
+    <div class="row align-items-center mb-5" data-aos="fade-left">
+        <div class="col-md-6 text-center mb-4 mb-md-0">
+            <i class="fa-solid fa-microchip fa-5x text-primary opacity-75"></i>
+        </div>
+        <div class="col-md-6">
+            <h3 class="fw-bold mb-3">2. AI Screening</h3>
+            <p class="text-muted fs-5">Our AI engine instantly reads every resume, extracting key skills, calculating years of experience, and generating a detailed candidate summary.</p>
+        </div>
+    </div>
+
+    <div class="row align-items-center mb-5" data-aos="fade-right">
+        <div class="col-md-6 order-2 order-md-1">
+            <h3 class="fw-bold mb-3">3. Make the Hire</h3>
+            <p class="text-muted fs-5">Review candidates ranked by Match Score against your Job Descriptions, bypassing the noise and focusing on the top talent.</p>
+        </div>
+        <div class="col-md-6 text-center order-1 order-md-2 mb-4 mb-md-0">
+            <i class="fa-solid fa-handshake fa-5x text-success opacity-75"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Final CTA -->
+<div class="text-center py-5 my-5" data-aos="zoom-in">
+    <h2 class="fw-bold mb-4">Ready to Transform Your Hiring?</h2>
+    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-5 py-3 shadow-lg fs-5">Create Your Account Today</a>
+</div>
+
+<style>
+    .landing-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("{{ url_for('static', filename='img/hero_bg.png') }}");
+        background-size: cover;
+        background-position: center;
+        z-index: -2;
+    }
+    
+    .landing-bg::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right, rgba(7, 9, 14, 0.95) 0%, rgba(7, 9, 14, 0.75) 100%);
+        z-index: -1;
+    }
+
+    /* Add a solid background to the sections below the fold so they don't look completely transparent over the fixed background */
+    #features, .py-5 {
+        position: relative;
+    }
+    
+    #features::before, .py-5::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--bg-main);
+        opacity: 0.85;
+        z-index: -1;
+        box-shadow: 0 0 50px 50px var(--bg-main);
+    }
+
+    .gradient-text {
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .backdrop-blur {
+        backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .backdrop-blur:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+</style>
+{% endblock %}
