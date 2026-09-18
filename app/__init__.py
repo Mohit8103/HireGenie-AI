@@ -58,3 +58,11 @@ def create_app():
     app.register_blueprint(api_bp)
 
     return app
+
+# Expose app for WSGI servers (e.g. gunicorn app:app)
+app = create_app()
+with app.app_context():
+    try:
+        db.create_all()
+    except Exception:
+        pass
