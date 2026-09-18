@@ -33,6 +33,23 @@ def list_candidates():
     
     return render_template('candidates/list.html', candidates=candidates, jobs=jobs)
 
+def stringify(val, delimiter=', '):
+    if val is None:
+        return ''
+    if isinstance(val, list):
+        return delimiter.join(str(x).strip() for x in val if x is not None and str(x).strip())
+    if isinstance(val, dict):
+        return delimiter.join(f"{k}: {v}" for k, v in val.items() if v)
+    return str(val).strip()
+
+def safe_int(val, default=0):
+    try:
+        if val is None:
+            return default
+        return int(float(val))
+    except (ValueError, TypeError):
+        return default
+
 @candidates_bp.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload_resume():
@@ -43,6 +60,9 @@ def upload_resume():
             
         files = request.files.getlist('resumes')
         target_job_id = request.form.get('job_id')
+        target_job = None
+        if target_job_id:
+            target_job = JobDescription.query.filter_by(id=target_job_id, admin_id=current_user.id).first()
         
         if not files or files[0].filename == '':
             flash('No selected file', 'danger')
@@ -75,16 +95,16 @@ def upload_resume():
                 # 3. Save Candidate
                 candidate = Candidate(
                     admin_id=current_user.id,
-                    name=cand_data.get('name', 'Unknown'),
-                    email=cand_data.get('email', ''),
-                    phone=cand_data.get('phone', ''),
-                    skills=cand_data.get('skills', ''),
-                    education=cand_data.get('education', ''),
-                    experience=cand_data.get('experience', ''),
-                    certifications=cand_data.get('certifications', ''),
-                    projects=cand_data.get('projects', ''),
-                    linkedin=cand_data.get('linkedin', ''),
-                    github=cand_data.get('github', '')
+                    name=stringify(cand_data.get('name')) or 'Unknown',
+                    email=stringify(cand_data.get('email')),
+                    phone=stringify(cand_data.get('phone')),
+                    skills=stringify(cand_data.get('skills')),
+                    education=stringify(cand_data.get('education'), delimiter='\n'),
+                    experience=stringify(cand_data.get('experience'), delimiter='\n'),
+                    certifications=stringify(cand_data.get('certifications')),
+                    projects=stringify(cand_data.get('projects'), delimiter='\n'),
+                    linkedin=stringify(cand_data.get('linkedin')),
+                    github=stringify(cand_data.get('github'))
                 )
                 db.session.add(candidate)
                 db.session.flush() # Get candidate ID
@@ -100,32 +120,30 @@ def upload_resume():
                 # 5. Save AI Analysis
                 analysis = AiAnalysis(
                     candidate_id=candidate.id,
-                    summary=ai_data.get('summary', ''),
-                    strengths=ai_data.get('strengths', ''),
-                    weaknesses=ai_data.get('weaknesses', ''),
-                    skill_assessment=ai_data.get('skill_assessment', ''),
-                    communication_assessment=ai_data.get('communication_assessment', ''),
-                    career_level=ai_data.get('career_level', ''),
-                    suitability_score=ai_data.get('suitability_score', 0)
+                    summary=stringify(ai_data.get('summary')),
+                    strengths=stringify(ai_data.get('strengths')),
+                    weaknesses=stringify(ai_data.get('weaknesses')),
+                    skill_assessment=stringify(ai_data.get('skill_assessment')),
+                    communication_assessment=stringify(ai_data.get('communication_assessment')),
+                    career_level=stringify(ai_data.get('career_level')),
+                    suitability_score=safe_int(ai_data.get('suitability_score'))
                 )
                 db.session.add(analysis)
                 
                 # 6. Match against job if selected
-                if target_job_id:
-                    job = JobDescription.query.filter_by(id=target_job_id, admin_id=current_user.id).first()
-                    if job:
-                        match_data = match_candidate_to_job(cand_data, ai_data, job.description, job.required_skills)
-                        if match_data:
-                            match_result = MatchResult(
-                                candidate_id=candidate.id,
-                                job_id=job.id,
-                                score=match_data.get('score', 0),
-                                matching_skills=match_data.get('matching_skills', ''),
-                                missing_skills=match_data.get('missing_skills', ''),
-                                recommendation=match_data.get('recommendation', '')
-                            )
-                            db.session.add(match_result)
-                        
+                if target_job:
+                    match_data = match_candidate_to_job(cand_data, ai_data, target_job.description, target_job.required_skills)
+                    if match_data:
+                        match_result = MatchResult(
+                            candidate_id=candidate.id,
+                            job_id=target_job.id,
+                            score=safe_int(match_data.get('score')),
+                            matching_skills=stringify(match_data.get('matching_skills')),
+                            missing_skills=stringify(match_data.get('missing_skills')),
+                            recommendation=stringify(match_data.get('recommendation'))
+                        )
+                        db.session.add(match_result)
+                    
                 db.session.commit()
                 success_count += 1
                 

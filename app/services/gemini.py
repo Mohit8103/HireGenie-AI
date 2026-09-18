@@ -38,12 +38,12 @@ def analyze_resume(resume_text):
         }},
         "analysis": {{
             "summary": "2-3 sentences summarizing the candidate",
-            "strengths": "bullet points or comma separated",
-            "weaknesses": "bullet points or comma separated",
+            "strengths": "comma-separated string of key strengths",
+            "weaknesses": "comma-separated string of areas for improvement",
             "skill_assessment": "paragraph assessing technical skills",
             "communication_assessment": "paragraph assessing communication based on resume writing",
             "career_level": "Junior, Mid-Level, Senior, Lead, etc.",
-            "suitability_score": int (0-100 score of general professional quality)
+            "suitability_score": 75
         }}
     }}
     

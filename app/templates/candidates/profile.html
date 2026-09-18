@@ -71,16 +71,20 @@
                     <div class="col-md-6">
                         <h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-thumbs-up me-1"></i> Strengths</h6>
                         <ul class="text-muted ps-3">
-                            {% for strength in candidate.ai_analysis.strengths.split(',') %}
+                            {% for strength in (candidate.ai_analysis.strengths or '').split(',') %}
+                            {% if strength.strip() %}
                             <li>{{ strength.strip() }}</li>
+                            {% endif %}
                             {% endfor %}
                         </ul>
                     </div>
                     <div class="col-md-6">
                         <h6 class="fw-bold text-danger mb-2"><i class="fa-solid fa-triangle-exclamation me-1"></i> Potential Weaknesses</h6>
                         <ul class="text-muted ps-3">
-                            {% for weakness in candidate.ai_analysis.weaknesses.split(',') %}
+                            {% for weakness in (candidate.ai_analysis.weaknesses or '').split(',') %}
+                            {% if weakness.strip() %}
                             <li>{{ weakness.strip() }}</li>
+                            {% endif %}
                             {% endfor %}
                         </ul>
                     </div>
