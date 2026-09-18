@@ -13,13 +13,22 @@ def create_app():
     app = Flask(__name__)
     
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_secret_key')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI', 'sqlite:///recruitment.db')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
-    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16 MB max upload size
     
-    # Ensure upload folder exists
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    # Handle database URI for serverless/Vercel environments
+    default_db = 'sqlite:////tmp/recruitment.db' if os.getenv('VERCEL') else 'sqlite:///recruitment.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI', default_db)
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # Handle upload folder safely (Vercel has read-only filesystem except /tmp)
+    default_upload = '/tmp/uploads' if os.getenv('VERCEL') else os.path.join(app.root_path, 'static', 'uploads')
+    upload_folder = os.getenv('UPLOAD_FOLDER', default_upload)
+    try:
+        os.makedirs(upload_folder, exist_ok=True)
+    except OSError:
+        upload_folder = '/tmp/uploads'
+        os.makedirs(upload_folder, exist_ok=True)
+    app.config['UPLOAD_FOLDER'] = upload_folder
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16 MB max upload size
 
     db.init_app(app)
     
